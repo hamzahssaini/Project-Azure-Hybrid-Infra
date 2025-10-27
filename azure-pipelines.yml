@@ -15,17 +15,22 @@ stages:
     - job: Init
       steps:
         - checkout: self
-        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
+
+        # Install Terraform
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+          displayName: 'Install Terraform'
           inputs:
             terraformVersion: $(terraformVersion)
-        - task: TerraformCLI@1
-          displayName: "Terraform Init"
+
+        # Terraform Init
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
+          displayName: 'Terraform Init'
           inputs:
             command: 'init'
             workingDirectory: '$(System.DefaultWorkingDirectory)'
             backendType: 'azurerm'
             backendServiceArm: 'AzureConnection'
-            backendAzureRmResourceGroupName: 'tfstate-rg'
+            backendAzureRmResourceGroupName: 'hub-rg'
             backendAzureRmStorageAccountName: 'tfstatehubspoke'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'terraform.tfstate'
@@ -36,30 +41,17 @@ stages:
     - job: Plan
       steps:
         - checkout: self
-        - task: UseTerraform@1
+
+        # Install Terraform again for this job
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+          displayName: 'Install Terraform'
           inputs:
             terraformVersion: $(terraformVersion)
+
+        # Terraform Plan
         - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
-          displayName: "Terraform Plan"
+          displayName: 'Terraform Plan'
           inputs:
             command: 'plan'
             workingDirectory: '$(System.DefaultWorkingDirectory)'
             environmentServiceNameAzureRM: 'AzureConnection'
-
-#- stage: TerraformApply
-#  dependsOn: TerraformPlan
-#  condition: succeeded()
-#  jobs:
-#    - job: Apply
-#      steps:
-#        - checkout: self
-#        - task: UseTerraform@1
-#          inputs:
-#            terraformVersion: $(terraformVersion)
-#        - task: TerraformCLI@1
-#          displayName: "Terraform Apply"
-#          inputs:
-#            command: 'apply'
-#            workingDirectory: '$(System.DefaultWorkingDirectory)'
-#            environmentServiceNameAzureRM: 'AzureConnection'
-#            args: '-auto-approve'
