@@ -46,20 +46,20 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)'
             environmentServiceNameAzureRM: 'AzureConnection'
 
-- stage: TerraformApply
-  dependsOn: TerraformPlan
-  condition: succeeded()
-  jobs:
-    - job: Apply
-      steps:
-        - checkout: self
-        - task: UseTerraform@1
-          inputs:
-            terraformVersion: $(terraformVersion)
-        - task: TerraformCLI@1
-          displayName: "Terraform Apply"
-          inputs:
-            command: 'apply'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            environmentServiceNameAzureRM: 'AzureConnection'
-            args: '-auto-approve'
+#- stage: TerraformApply
+#  dependsOn: TerraformPlan
+#  condition: succeeded()
+#  jobs:
+#    - job: Apply
+#      steps:
+#        - checkout: self
+#        - task: UseTerraform@1
+#          inputs:
+#            terraformVersion: $(terraformVersion)
+#        - task: TerraformCLI@1
+#          displayName: "Terraform Apply"
+#          inputs:
+#            command: 'apply'
+#            workingDirectory: '$(System.DefaultWorkingDirectory)'
+#            environmentServiceNameAzureRM: 'AzureConnection'
+#            args: '-auto-approve'
