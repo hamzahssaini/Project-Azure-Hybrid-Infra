@@ -61,7 +61,7 @@ resource "azurerm_log_analytics_workspace" "la" {
 
 # Network Watcher (one per region in a RG)
 resource "azurerm_network_watcher" "nw" {
-  name                = "${var.prefix}-nw-${var.location}"
+  name                = "${var.prefix}-nw"
   location            = var.location
   resource_group_name = azurerm_resource_group.hub.name
   tags                = local.tags
@@ -72,8 +72,8 @@ resource "azurerm_public_ip" "vpn_pip" {
   name                = "${var.prefix}-vpn-pip"
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
-  allocation_method   = "Dynamic"
-  sku                 = "Basic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
   tags                = local.tags
 }
 

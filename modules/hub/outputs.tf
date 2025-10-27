@@ -1,9 +1,21 @@
-output "resource_group_name" {
-  value = azurerm_resource_group.hub.name
+output "rg_name" {
+  description = "The name of the Hub resource group"
+  value       = azurerm_resource_group.hub.name
+}
+
+output "vnet_name" {
+  description = "The name of the Hub virtual network"
+  value       = azurerm_virtual_network.hub.name
 }
 
 output "vnet_id" {
-  value = azurerm_virtual_network.hub.id
+  description = "The ID of the Hub virtual network"
+  value       = azurerm_virtual_network.hub.id
+}
+
+output "location" {
+  description = "Hub network location"
+  value       = azurerm_resource_group.hub.location
 }
 
 output "subnet_gateway_id" {
