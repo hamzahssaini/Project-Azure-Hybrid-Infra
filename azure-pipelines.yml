@@ -30,7 +30,7 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)'
             backendType: 'azurerm'
             backendServiceArm: 'AzureConnection'
-            backendAzureRmResourceGroupName: 'hub-rg'
+            backendAzureRmResourceGroupName: 'tfstate-rg'
             backendAzureRmStorageAccountName: 'tfstatehubspoke'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'terraform.tfstate'
