@@ -1,0 +1,65 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  terraformVersion: '1.13.4'
+
+stages:
+- stage: TerraformInit
+  jobs:
+    - job: Init
+      steps:
+        - checkout: self
+        - task: UseTerraform@1
+          inputs:
+            terraformVersion: $(terraformVersion)
+        - task: TerraformCLI@1
+          displayName: "Terraform Init"
+          inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+            backendType: 'azurerm'
+            backendServiceArm: 'AzureConnection'
+            backendAzureRmResourceGroupName: 'hub-rg'
+            backendAzureRmStorageAccountName: 'tfstatehubspoke'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'terraform.tfstate'
+
+- stage: TerraformPlan
+  dependsOn: TerraformInit
+  jobs:
+    - job: Plan
+      steps:
+        - checkout: self
+        - task: UseTerraform@1
+          inputs:
+            terraformVersion: $(terraformVersion)
+        - task: TerraformCLI@1
+          displayName: "Terraform Plan"
+          inputs:
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+            environmentServiceNameAzureRM: 'AzureConnection'
+
+- stage: TerraformApply
+  dependsOn: TerraformPlan
+  condition: succeeded()
+  jobs:
+    - job: Apply
+      steps:
+        - checkout: self
+        - task: UseTerraform@1
+          inputs:
+            terraformVersion: $(terraformVersion)
+        - task: TerraformCLI@1
+          displayName: "Terraform Apply"
+          inputs:
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+            environmentServiceNameAzureRM: 'AzureConnection'
+            args: '-auto-approve'
