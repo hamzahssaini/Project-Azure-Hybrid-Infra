@@ -10,48 +10,25 @@ variables:
   terraformVersion: '1.13.4'
 
 stages:
-- stage: TerraformInit
+- stage: Plan
+  displayName: 'Terraform Plan'
   jobs:
-    - job: Init
-      steps:
-        - checkout: self
+  - job: TerraformPlan
+    displayName: 'Terraform Plan'
+    steps:
+    - checkout: self
 
-        # Install Terraform
-        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-          displayName: 'Install Terraform'
-          inputs:
-            terraformVersion: $(terraformVersion)
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: $(terraformVersion)
 
-        # Terraform Init
-        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
-          displayName: 'Terraform Init'
-          inputs:
-            command: 'init'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            backendType: 'azurerm'
-            backendServiceArm: 'AzureConnection'
-            backendAzureRmResourceGroupName: 'tfstate-rg'
-            backendAzureRmStorageAccountName: 'tfstatehubspoke'
-            backendAzureRmContainerName: 'tfstate'
-            backendAzureRmKey: 'terraform.tfstate'
-
-- stage: TerraformPlan
-  dependsOn: TerraformInit
-  jobs:
-    - job: Plan
-      steps:
-        - checkout: self
-
-        # Install Terraform again for this job
-        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-          displayName: 'Install Terraform'
-          inputs:
-            terraformVersion: $(terraformVersion)
-
-        # Terraform Plan
-        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
-          displayName: 'Terraform Plan'
-          inputs:
-            command: 'plan'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            environmentServiceNameAzureRM: 'AzureConnection'
+    - script: |
+        terraform --version
+        echo "🔹 Initializing Terraform Backend..."
+        terraform init -backend-config="resource_group_name=tfstate-rg" \
+                       -backend-config="storage_account_name=tfstatehubspokehamza" \
+                       -backend-config="container_name=tfstate" \
+                       -backend-config="key=terraform.tfstate"
+        echo "🔹 Running Terraform Plan..."
+        terraform plan -out=tfplan
+      displayName: 'Terraform Init and Plan'
