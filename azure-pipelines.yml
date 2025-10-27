@@ -15,7 +15,7 @@ stages:
     - job: Init
       steps:
         - checkout: self
-        - task: UseTerraform@1
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
           inputs:
             terraformVersion: $(terraformVersion)
         - task: TerraformCLI@1
@@ -25,7 +25,7 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)'
             backendType: 'azurerm'
             backendServiceArm: 'AzureConnection'
-            backendAzureRmResourceGroupName: 'hub-rg'
+            backendAzureRmResourceGroupName: 'tfstate-rg'
             backendAzureRmStorageAccountName: 'tfstatehubspoke'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'terraform.tfstate'
@@ -39,7 +39,7 @@ stages:
         - task: UseTerraform@1
           inputs:
             terraformVersion: $(terraformVersion)
-        - task: TerraformCLI@1
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-cli-task.TerraformCLI@0
           displayName: "Terraform Plan"
           inputs:
             command: 'plan'
