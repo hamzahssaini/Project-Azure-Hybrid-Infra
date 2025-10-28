@@ -4,12 +4,15 @@ trigger:
       - master
 
 pool:
-  name: 'Default'
+  name: 'Default'        # ✅ Make sure your self-hosted agent is in this pool
 
 variables:
   terraformVersion: '1.13.4'
 
 stages:
+# =============================
+# 1️⃣ Terraform Plan Stage
+# =============================
 - stage: Plan
   displayName: 'Terraform Plan'
   jobs:
@@ -17,6 +20,7 @@ stages:
     displayName: 'Terraform Plan'
     steps:
     - checkout: self
+      fetchDepth: 0        # ✅ Fetch full repo to avoid checkout errors
 
     - task: TerraformInstaller@0
       inputs:
@@ -33,14 +37,18 @@ stages:
         terraform plan -out=tfplan
       displayName: 'Terraform Init and Plan'
 
+# =============================
+# 2️⃣ Terraform Apply Stage
+# =============================
 - stage: Apply
   displayName: 'Terraform Apply'
-  dependsOn: Plan
+  dependsOn: Plan          # ✅ Runs only if Plan succeeds
   jobs:
   - job: TerraformApply
     displayName: 'Terraform Apply'
     steps:
     - checkout: self
+      fetchDepth: 0        # ✅ Also fetch full repo here
 
     - task: TerraformInstaller@0
       inputs:
