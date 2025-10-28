@@ -5,8 +5,6 @@ trigger:
 
 pool:
   name: 'Default'
-  demands:
-  - agent.name -equals UNKNOWN
 
 variables:
   terraformVersion: '1.13.4'
