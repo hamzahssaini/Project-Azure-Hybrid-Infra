@@ -40,9 +40,6 @@ stages:
     - publish: tfplan
       artifact: terraform_plan
 
-# =============================
-# 2️⃣ Terraform Apply
-# =============================
 - stage: Apply
   displayName: 'Terraform Apply'
   dependsOn: Plan
@@ -53,6 +50,7 @@ stages:
     - checkout: self
       fetchDepth: 0
 
+    # Download the tfplan artifact
     - download: current
       artifact: terraform_plan
 
@@ -62,11 +60,15 @@ stages:
 
     - script: |
         terraform --version
+        echo "🔹 Moving tfplan to working directory..."
+        copy "$(Pipeline.Workspace)\terraform_plan\tfplan" "$(System.DefaultWorkingDirectory)\tfplan"
+
         echo "🔹 Initializing Terraform Backend..."
         terraform init -backend-config="resource_group_name=tfstate-rg" ^
                        -backend-config="storage_account_name=tfstatehubspokehamza" ^
                        -backend-config="container_name=tfstate" ^
                        -backend-config="key=terraform.tfstate"
+
         echo "🔹 Running Terraform Apply..."
-        terraform apply -auto-approve tfplan
+        terraform apply -auto-approve "$(System.DefaultWorkingDirectory)\tfplan"
       displayName: 'Terraform Init and Apply'
