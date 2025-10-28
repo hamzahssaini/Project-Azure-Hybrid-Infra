@@ -4,7 +4,9 @@ trigger:
       - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Default'
+  demands:
+  - agent.name -equals UNKNOWN
 
 variables:
   terraformVersion: '1.13.4'
@@ -25,10 +27,34 @@ stages:
     - script: |
         terraform --version
         echo "🔹 Initializing Terraform Backend..."
-        terraform init -backend-config="resource_group_name=tfstate-rg" \
-                       -backend-config="storage_account_name=tfstatehubspokehamza" \
-                       -backend-config="container_name=tfstate" \
+        terraform init -backend-config="resource_group_name=tfstate-rg" ^
+                       -backend-config="storage_account_name=tfstatehubspokehamza" ^
+                       -backend-config="container_name=tfstate" ^
                        -backend-config="key=terraform.tfstate"
         echo "🔹 Running Terraform Plan..."
         terraform plan -out=tfplan
       displayName: 'Terraform Init and Plan'
+
+- stage: Apply
+  displayName: 'Terraform Apply'
+  dependsOn: Plan
+  jobs:
+  - job: TerraformApply
+    displayName: 'Terraform Apply'
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: $(terraformVersion)
+
+    - script: |
+        terraform --version
+        echo "🔹 Initializing Terraform Backend..."
+        terraform init -backend-config="resource_group_name=hub-rg" ^
+                       -backend-config="storage_account_name=tfstatehubspoke" ^
+                       -backend-config="container_name=tfstate" ^
+                       -backend-config="key=terraform.tfstate"
+        echo "🔹 Running Terraform Apply..."
+        terraform apply -auto-approve tfplan
+      displayName: 'Terraform Init and Apply'
