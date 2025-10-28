@@ -4,14 +4,14 @@ trigger:
       - master
 
 pool:
-  name: 'Default'        # ✅ Make sure your self-hosted agent is in this pool
+  name: 'Default'
 
 variables:
   terraformVersion: '1.13.4'
 
 stages:
 # =============================
-# 1️⃣ Terraform Plan Stage
+# 1️⃣ Terraform Plan
 # =============================
 - stage: Plan
   displayName: 'Terraform Plan'
@@ -20,7 +20,7 @@ stages:
     displayName: 'Terraform Plan'
     steps:
     - checkout: self
-      fetchDepth: 0        # ✅ Fetch full repo to avoid checkout errors
+      fetchDepth: 0
 
     - task: TerraformInstaller@0
       inputs:
@@ -37,18 +37,24 @@ stages:
         terraform plan -out=tfplan
       displayName: 'Terraform Init and Plan'
 
+    - publish: tfplan
+      artifact: terraform_plan
+
 # =============================
-# 2️⃣ Terraform Apply Stage
+# 2️⃣ Terraform Apply
 # =============================
 - stage: Apply
   displayName: 'Terraform Apply'
-  dependsOn: Plan          # ✅ Runs only if Plan succeeds
+  dependsOn: Plan
   jobs:
   - job: TerraformApply
     displayName: 'Terraform Apply'
     steps:
     - checkout: self
-      fetchDepth: 0        # ✅ Also fetch full repo here
+      fetchDepth: 0
+
+    - download: current
+      artifact: terraform_plan
 
     - task: TerraformInstaller@0
       inputs:
@@ -57,8 +63,8 @@ stages:
     - script: |
         terraform --version
         echo "🔹 Initializing Terraform Backend..."
-        terraform init -backend-config="resource_group_name=hub-rg" ^
-                       -backend-config="storage_account_name=tfstatehubspoke" ^
+        terraform init -backend-config="resource_group_name=tfstate-rg" ^
+                       -backend-config="storage_account_name=tfstatehubspokehamza" ^
                        -backend-config="container_name=tfstate" ^
                        -backend-config="key=terraform.tfstate"
         echo "🔹 Running Terraform Apply..."
