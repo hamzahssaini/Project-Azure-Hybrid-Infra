@@ -10,7 +10,7 @@ variables:
   terraformVersion: '1.13.4'
 
 stages:
-# =========================
+# =======================
 # 1️⃣ Terraform Plan
 # =========================
 - stage: Plan
