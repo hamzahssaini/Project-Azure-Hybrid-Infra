@@ -12,7 +12,7 @@ variables:
 stages:
 # ==========================
 # 1️⃣ Terraform Plan
-# =============================
+# ===========================
 - stage: Plan
   displayName: 'Terraform Plan'
   jobs:
