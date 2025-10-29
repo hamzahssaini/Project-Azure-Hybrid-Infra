@@ -36,6 +36,11 @@ stages:
         echo "🔹 Running Terraform Plan..."
         terraform plan -out=tfplan
       displayName: 'Terraform Init and Plan'
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
 
     - publish: tfplan
       artifact: terraform_plan
