@@ -12,7 +12,7 @@ variables:
 stages:
 # ==========================
 # 1️⃣ Terraform Plan
-# ===========================
+# ==========================
 - stage: Plan
   displayName: 'Terraform Plan'
   jobs:
@@ -21,7 +21,7 @@ stages:
     steps:
     - checkout: self
       fetchDepth: 0
-      
+
     - task: TerraformInstaller@0
       inputs:
         terraformVersion: $(terraformVersion)
