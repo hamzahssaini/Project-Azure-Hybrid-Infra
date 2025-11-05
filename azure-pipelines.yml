@@ -7,7 +7,9 @@ pool:
   name: 'Default'
 
 variables:
-  terraformVersion: '1.13.4'
+- group: Terraform-Credentials
+- name: terraformVersion
+  value: '1.13.4'
 
 stages:
 # =======================
