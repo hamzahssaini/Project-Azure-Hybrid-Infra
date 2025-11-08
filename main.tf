@@ -9,7 +9,7 @@ module "hub" {
 module "spoke_app" {
   source             = "./modules/spoke"
   prefix             = "spoke-app"
-  location           = "UK South"
+  location           = "westus"
   address_space      = ["10.1.0.0/16"]
   subnet_name        = "subnet-app"
   subnet_prefix      = "10.1.1.0/24"
@@ -27,7 +27,7 @@ module "spoke_app" {
 module "spoke_db" {
   source             = "./modules/spoke"
   prefix             = "spoke-db"
-  location           = "UK South"
+  location           = "westus"
   address_space      = ["10.2.0.0/16"]
   subnet_name        = "subnet-db"
   subnet_prefix      = "10.2.1.0/24"
