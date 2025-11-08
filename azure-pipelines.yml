@@ -31,10 +31,10 @@ stages:
     - script: |
         terraform --version
         echo "🔹 Initializing Terraform Backend..."
-        terraform init -backend-config="resource_group_name=tfstate-rg" ^
-                       -backend-config="storage_account_name=hamzatfstatehubspoke" ^
-                       -backend-config="container_name=tfstate" ^
-                       -backend-config="key=terraform.tfstate"
+        terraform init -reconfigure -backend-config="resource_group_name=tfstate-rg" ^
+                                    -backend-config="storage_account_name=hamzatfstatehubspoke" ^
+                                    -backend-config="container_name=tfstate" ^
+                                    -backend-config="key=terraform.tfstate"
         echo "🔹 Running Terraform Plan..."
         terraform plan -out=tfplan
       displayName: 'Terraform Init and Plan'
@@ -77,10 +77,10 @@ stages:
         copy "$(Pipeline.Workspace)\terraform_plan\tfplan" "$(System.DefaultWorkingDirectory)\tfplan"
 
         echo "🔹 Initializing Terraform Backend..."
-        terraform init -backend-config="resource_group_name=tfstate-rg" ^
-                       -backend-config="storage_account_name=hamzatfstatehubspoke" ^
-                       -backend-config="container_name=tfstate" ^
-                       -backend-config="key=terraform.tfstate"
+        terraform init -reconfigure -backend-config="resource_group_name=tfstate-rg" ^
+                                    -backend-config="storage_account_name=hamzatfstatehubspoke" ^
+                                    -backend-config="container_name=tfstate" ^
+                                    -backend-config="key=terraform.tfstate"
 
         echo "🔹 Running Terraform Apply..."
         terraform apply -auto-approve "$(System.DefaultWorkingDirectory)\tfplan"
