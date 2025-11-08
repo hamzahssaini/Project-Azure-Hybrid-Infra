@@ -32,7 +32,7 @@ stages:
         terraform --version
         echo "🔹 Initializing Terraform Backend..."
         terraform init -backend-config="resource_group_name=tfstate-rg" ^
-                       -backend-config="storage_account_name=tfstatehubspokehamza" ^
+                       -backend-config="storage_account_name=hamzatfstatehubspoke" ^
                        -backend-config="container_name=tfstate" ^
                        -backend-config="key=terraform.tfstate"
         echo "🔹 Running Terraform Plan..."
@@ -78,7 +78,7 @@ stages:
 
         echo "🔹 Initializing Terraform Backend..."
         terraform init -backend-config="resource_group_name=tfstate-rg" ^
-                       -backend-config="storage_account_name=tfstatehubspokehamza" ^
+                       -backend-config="storage_account_name=hamzatfstatehubspoke" ^
                        -backend-config="container_name=tfstate" ^
                        -backend-config="key=terraform.tfstate"
 
